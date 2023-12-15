@@ -1,3 +1,7 @@
+# Authors: Sayak Kundu, Dooseok Yoon
+# Copyright (c) 2023, The Regents of the University of California
+# All rights reserved.
+
 import os
 import pickle as pkl
 import numpy as np

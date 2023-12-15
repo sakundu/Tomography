@@ -1,4 +1,7 @@
-# TrainTest.py
+# Authors: Sayak Kundu, Dooseok Yoon
+# Copyright (c) 2023, The Regents of the University of California
+# All rights reserved.
+
 import torch
 import numpy as np
 from model import AdaptiveUNet, UNET, FCN

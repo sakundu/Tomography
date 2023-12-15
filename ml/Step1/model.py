@@ -1,4 +1,7 @@
-# Model.py
+# Authors: Sayak Kundu, Dooseok Yoon
+# Copyright (c) 2023, The Regents of the University of California
+# All rights reserved.
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

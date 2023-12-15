@@ -4,7 +4,6 @@
 
 import torch
 import numpy as np
-from data import ImageDataset
 from torch.utils.data import Dataset, DataLoader
 from typing import List, Tuple, Dict, Callable, Union, Any, Optional
 import pickle as pkl
@@ -14,14 +13,13 @@ from tqdm import tqdm
 # from sklearn.metrics import f1_score
 from datetime import datetime
 from data_sample_dual import ImageDataset_sample, ImageDataset_complete
-from data import ImageDataset
 from model import MobifiedMobileNetV2
 import time
 from scipy.stats import kendalltau
 import sys
 import datetime
 
-def evaluate_loss(model, test_loader, criterion, device):
+def evaluate_loss(model, test_loader, criterion1, criterion2, device):
     model.eval()
     epoch_loss = 0
     correct = 0
@@ -31,10 +29,11 @@ def evaluate_loss(model, test_loader, criterion, device):
             data = data.to(device)
             target = target.to(device)
             output = model(data)
-            pred = output.argmax(dim=1, keepdim=True)
-            acutal = target.argmax(dim=1, keepdim=True)
-            correct += pred.eq(acutal).sum().item()
-            loss = criterion(output, target.float())
+            pred = (output[:, 0] > 0.0).float()
+            correct += pred.eq(target[:, 0]).sum().item()
+            loss1 = criterion1(output[:, 0], target[:, 0].float())
+            loss2 = criterion2(output[:, 1], target[:, 1].float())
+            loss = loss1 + loss2
             total += len(data)
             epoch_loss += loss.item()
     return epoch_loss/len(test_loader), correct/total
@@ -55,15 +54,16 @@ def evaluate_kendall_tau(model, test_dataset:ImageDataset_sample,
         data = data.to(device)
         label = label.to(device)
         output = model(data)
-        predictions.append(output.detach().cpu().numpy())
-        actual.append(label.detach().cpu().numpy())
+        pred = (output[:, 0] > 0.0).float()
+        predictions.append(pred.cpu().numpy())
+        actual.append(label[:, 0].cpu().numpy())
     predictions = np.concatenate(predictions, axis=0)
     actual = np.concatenate(actual, axis=0)
     
     win_count_predicted:Dict[int, int] = {}
     win_count_actual:Dict[int, int] = {}
     for i, (e1, e2) in enumerate(test1_dataset.data):
-        if predictions[i][0] > predictions[i][1]:
+        if predictions[i] == 1:
             if e1 not in win_count_predicted:
                 win_count_predicted[e1] = 0
             win_count_predicted[e1] += 1
@@ -72,7 +72,7 @@ def evaluate_kendall_tau(model, test_dataset:ImageDataset_sample,
                 win_count_predicted[e2] = 0
             win_count_predicted[e2] += 1
         
-        if actual[i][0] > actual[i][1]:
+        if actual[i] == 1:
             if e1 not in win_count_actual:
                 win_count_actual[e1] = 0
             win_count_actual[e1] += 1
@@ -109,15 +109,14 @@ class MAPELoss(nn.Module):
         loss = torch.mean(torch.abs((target - input) / target)) * 100
         return loss
 
-def train_step2(train_data_file:str, test_data_file:str, loss_id:int, device:int,
-                is_int:bool = False,
+def train_step2(train_data_file:str, test_data_file:str, device:int,
                 batch_size:int = 128) -> None:
     np.random.seed(42)
     print(f"Training Step2 model")
     print(f"Starting train dataset creation")
-    train_dataset = ImageDataset_sample(train_data_file, is_int=is_int)
+    train_dataset = ImageDataset_sample(train_data_file)
     print(f"Starting test dataset creation")
-    test_dataset = ImageDataset_sample(test_data_file, is_int=is_int)
+    test_dataset = ImageDataset_sample(test_data_file)
     print(f"Train dataset size: {len(train_dataset)}, Test dataset size: {len(test_dataset)}")
     # train_sampled_run_ids = [7875, 3434, 8949, 9053, 5141, 6347, 4648, 6477, 5060, 8783]
     # test_sampled_run_ids = [8440, 6315, 6259, 6807, 2510, 6228, 3287, 8974, 6070, 9153]
@@ -133,29 +132,21 @@ def train_step2(train_data_file:str, test_data_file:str, loss_id:int, device:int
                                 num_classes = 2)
     model.unfreeze_all_layers()
     
-    if loss_id == 0:
-        criterion = nn.CrossEntropyLoss()
-    elif loss_id == 1:
-        criterion = nn.MSELoss()
-    elif loss_id == 2:
-        criterion = nn.L1Loss()
-    elif loss_id == 3:
-        criterion = MAPELoss()
-    else:
-        exit()
-
+    criterion1 = nn.BCEWithLogitsLoss()
+    criterion2 = nn.MSELoss()
+    
     prefix = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    print(f"Prefix: {prefix} Loss: {loss_id} is_int: {is_int}")
-
-    ## Default vaule is 0.001
+    
     learning_rate = 0.001
-    print(f"Learning rate: {learning_rate}")
+    print(f"Learning rate: {learning_rate} Prefix: {prefix}")
+    
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     num_epochs = 30
-
+    
     device = torch.device(f'cuda:{device}' if torch.cuda.is_available() else 'cpu')
     model = model.to(device)
-    criterion = criterion.to(device)
+    criterion1 = criterion1.to(device)
+    criterion2 = criterion2.to(device)
     best_accuracy = 0
     for epoch in range(num_epochs):
         model.train()
@@ -165,29 +156,29 @@ def train_step2(train_data_file:str, test_data_file:str, loss_id:int, device:int
             data = data.to(device)
             target = target.to(device)
             optimizer.zero_grad()
-            output = model(data)
-            pred = output.argmax(dim=1, keepdim=True)
-            acutal = target.argmax(dim=1, keepdim=True)
-            correct += pred.eq(acutal).sum().item()
-            loss = criterion(output.squeeze(), target.float())
+            output = model(data).squeeze()
+            pred = (output[:, 0] > 0.0).float()
+            correct += pred.eq(target[:, 0]).sum().item()
+            loss1 = criterion1(output[:, 0], target[:, 0].float())
+            loss2 = criterion2(output[:, 1], target[:, 1].float())
+            loss = loss1 + loss2
             loss.backward()
             optimizer.step()
             epoch_loss += loss.item()
-        print(f"Epoch {epoch} Train loss: {epoch_loss/len(train_loader)}"
-              f" Accuracy: {correct/len(train_dataset)}")
+        print(f"Epoch {epoch} Train loss: {epoch_loss/len(train_loader)} Accuracy: {correct/len(train_dataset)}")
 
-        test_loss, test_acu = evaluate_loss(model, test_loader, criterion,
-                                            device)
-
+        test_loss, test_acu = evaluate_loss(model, test_loader, criterion1,
+                                            criterion2, device)
+        
         print(f"Epoch {epoch} test loss: {test_loss} Accuracy: {test_acu}")
         if test_acu > best_accuracy:
             best_accuracy = test_acu
-            torch.save(model.state_dict(), f"./best_model/step2_model_{loss_id}_{prefix}.pt")
+            torch.save(model.state_dict(), f"./best_model/step2_model_{prefix}.pt")
             print(f"Saved model at epoch {epoch} with accuracy {best_accuracy}")
 
     # Load the best model
-    model.load_state_dict(torch.load(f"./best_model/step2_model_{loss_id}_{prefix}.pt"))
-
+    model.load_state_dict(torch.load(f"./best_model/step2_model_{prefix}.pt"))
+    
     ## Average Kendall Tau for all runs ##
     run_ids = train_dataset.get_run_ids()
     ## Randomly select 50 runs ##
@@ -213,20 +204,15 @@ def train_step2(train_data_file:str, test_data_file:str, loss_id:int, device:int
     # for run_id in train_sampled_run_ids:
     #     tau = evaluate_kendall_tau(model, train_dataset, device, run_id)
     #     print(f"\tKendall Tau for run {run_id}: {tau}")
-
+    
     # print(f"Kendall Tau for selected designs on test dataset")
     # for run_id in test_sampled_run_ids:
     #     tau = evaluate_kendall_tau(model, test_dataset, device, run_id)
     #     print(f"\tKendall Tau for run {run_id}: {tau}")
     
 if __name__ == "__main__":
-    # loss = int(sys.argv[1])
-    loss = 0
     device = int(sys.argv[1])
-    is_int = False
-    if len(sys.argv) > 2:
-        is_int = bool(int(sys.argv[2]))
     data_dir = '/mnt/dgx_projects/sakundu/Apple/asap7/data/step2/'
     train_data_file = f"{data_dir}/train/train_label.txt"
     test_data_file = f"{data_dir}/test/test_label.txt"
-    train_step2(train_data_file, test_data_file, loss, device, is_int)
+    train_step2(train_data_file, test_data_file, device)

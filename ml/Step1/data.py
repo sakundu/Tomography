@@ -1,4 +1,7 @@
-# DataLoader.py
+# Authors: Sayak Kundu, Dooseok Yoon
+# Copyright (c) 2023, The Regents of the University of California
+# All rights reserved.
+
 import numpy as np
 import torch
 from torch.utils.data import Dataset, DataLoader

@@ -1,3 +1,7 @@
+# Authors: Sayak Kundu, Dooseok Yoon
+# Copyright (c) 2023, The Regents of the University of California
+# All rights reserved.
+
 import numpy as np
 from typing import List, Tuple, Dict, Callable, Union, Any, Optional
 from itertools import combinations
