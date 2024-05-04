@@ -3,6 +3,6 @@ This repository contains codes for the Tomography project, designed to utilize p
 
 ## ANG-Macro
 
-| <img src="ANGmacro.png" width=750px> |
+| <img src="ANGmacro.png" width=600px> |
 |:--:|
 | *Macro Integration Description* |
