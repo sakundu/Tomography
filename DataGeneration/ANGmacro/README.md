@@ -18,6 +18,6 @@ Here, ANG-Macro means 'macro-integrated artificial netlist'
   - Put in tech LEF and std. cell LEF download path into the 'ng45lefdir' of 'ang_lib_setup.tcl' file
 
 4. 
-
+| <img src="macroPinSum.png" width=600px> |
 
 
