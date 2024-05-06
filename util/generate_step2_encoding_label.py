@@ -1,5 +1,5 @@
-# Authors: Sayak Kundu, Dooseok Yoon
-# Copyright (c) 2023, The Regents of the University of California
+# Authors: xxx 
+# Copyright (c) 2023, The Regents of the xxx 
 # All rights reserved.
 
 from cgi import test
@@ -75,7 +75,7 @@ def copy_run_data(run_id:int, run_dir:str, output_dir:str) -> None:
     return
 
 def copy_run_data_from_rpt_list(rpt_list:str) -> None:
-    base_dir = '/home/fetzfs_projects/Tomography/sakundu/kth_sweep_ml_data'
+    base_dir = ''
     run_dir = f"{base_dir}/train"
     output_dir = f"{base_dir}/step2_route_run_inputs_encoding/features"
     fp = open(rpt_list, 'r')
@@ -268,7 +268,7 @@ def write_encoding_label_from_rpt_helper(drc_rpt_file:str, run_dir:str,
     print(f"Output encoding directory: {output_dir} is generated")
 
 def write_encoding_label_from_rpt_asap7() -> None:
-    base_dir = "/home/fetzfs_projects/Tomography/sakundu/kth_sweep_ml_data"
+    base_dir = ""
     drc_rpt_file = f"{base_dir}/data/asap7/step2/test_drc_rpt"
     encode_dir = f"{base_dir}/step2_route_run_inputs_asap7"
     run_dir = f"{base_dir}/test_asap7"
@@ -280,7 +280,7 @@ def write_encoding_label_from_rpt_asap7() -> None:
     return
 
 def write_encoding_label_from_rpt():
-    tomography_dir = '/home/fetzfs_projects/Tomography/sakundu/kth_sweep_ml_data'
+    tomography_dir = ''
     drc_rpt_file = f'{tomography_dir}/step2_route_run_inputs/drc_rpt'
     encode_dir = f'{tomography_dir}/step2_route_run_inputs/'
     run_dir = f'{tomography_dir}/train'
@@ -320,7 +320,7 @@ def write_encoding_label_from_rpt():
     return
 
 if __name__ == '__main__':
-    # base_dir = '/home/fetzfs_projects/Tomography/sakundu/kth_sweep_ml_data'
+    # base_dir = ''
     # drc_rpt = f"{base_dir}/step2_route_run_inputs_encoding/label.txt"
     # split_label_file(drc_rpt)
     write_encoding_label_from_rpt_asap7()

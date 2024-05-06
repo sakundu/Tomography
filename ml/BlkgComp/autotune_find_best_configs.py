@@ -104,7 +104,7 @@ class raytuner:
     
     def __call__ (self) -> None:
         suffix = datetime.now().strftime("%y%m%d_%H%M%S")
-        base_dir = '/mnt/dgx_projects/sakundu/Apple/rayTune_best_config'
+        base_dir = ''
         run_dir = f"{base_dir}/run_tune_{suffix}"
         os.makedirs(run_dir)
         start_time = time.time()
@@ -136,6 +136,6 @@ class raytuner:
         return
 
 if __name__ == "__main__":
-    base_dir = '/mnt/dgx_projects/sakundu/Apple/nova_ng45'
+    base_dir = ''
     rt = raytuner(base_dir)
     rt()

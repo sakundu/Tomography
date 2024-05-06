@@ -1,5 +1,5 @@
-# Authors: Sayak Kundu, Dooseok Yoon
-# Copyright (c) 2023, The Regents of the University of California
+# Authors: xxx 
+# Copyright (c) 2023, The Regents of the xxx 
 # All rights reserved.
 
 import torch
@@ -167,8 +167,8 @@ def train_step2(test_data_file:str, loss_id:int, device:int,
 if __name__ == "__main__":
     loss = int(sys.argv[1])
     device = int(sys.argv[2])
-    # data_dir = '/mnt/dgx_projects/sakundu/Apple/step2_data/step2_route_run_inputs_encoding/'
+    # data_dir = ''
     # train_data_file = f"{data_dir}/label_train.txt"
     # test_data_file = f"{data_dir}/label_test.txt"
-    test_data_file = "/mnt/dgx_projects/sakundu/Apple/ca53_ng45/run2_label.txt"
+    test_data_file = ""
     train_step2(test_data_file, loss, device)

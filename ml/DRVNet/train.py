@@ -1,5 +1,5 @@
-# Authors: Sayak Kundu, Dooseok Yoon
-# Copyright (c) 2023, The Regents of the University of California
+# Authors: xxx 
+# Copyright (c) 2023, The Regents of the xxx 
 # All rights reserved.
 
 import torch
@@ -162,8 +162,8 @@ def train(train_data:str, test_data:str, device:int, epochs:int = 100,
     print(f"Best model path: {best_model_path}")
     
 if __name__ == '__main__':
-    train_data = '/mnt/dgx_projects/sakundu/Apple/asap7/data/step1/train/data.txt'
-    test_data = '/mnt/dgx_projects/sakundu/Apple/asap7/data/step1/test/data.txt'
+    train_data = ''
+    test_data = ''
     
     device = int(sys.argv[1])
     is_unet = bool(int(sys.argv[2]))

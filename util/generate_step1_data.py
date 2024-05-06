@@ -1,5 +1,5 @@
-# Authors: Sayak Kundu, Dooseok Yoon
-# Copyright (c) 2023, The Regents of the University of California
+# Authors: xxx 
+# Copyright (c) 2023, The Regents of the xxx 
 # All rights reserved.
 
 import os
@@ -134,7 +134,7 @@ def generate_data(input_dir:str, output_dir:str) -> None:
     return
 
 if __name__ == "__main__":
-    base_dir = '/home/fetzfs_projects/Tomography/sakundu/kth_sweep_ml_data/'
+    base_dir = ''
     run_type = 'test'
     input_dir = f'{base_dir}/{run_type}_asap7'
     output_dir = f'{base_dir}/data/asap7/step1/{run_type}'

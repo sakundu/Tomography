@@ -783,7 +783,7 @@ if __name__ == '__main__':
         db_unit = int(sys.argv[1])
         run_dir = sys.argv[2]
         write_out_data(db_unit, run_dir)
-        # output_dir = '/home/fetzfs_projects/Tomography/sakundu/kth_sweep_ml_data/yolo_data/train'
+        # output_dir = ''
         # write_out_yolo_data(db_unit, run_dir, output_dir)
         exit()
 

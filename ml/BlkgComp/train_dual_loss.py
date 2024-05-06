@@ -1,5 +1,5 @@
-# Authors: Sayak Kundu, Dooseok Yoon
-# Copyright (c) 2023, The Regents of the University of California
+# Authors: xxx
+# Copyright (c) 2023, The Regents of the xxx 
 # All rights reserved.
 
 import torch
@@ -212,7 +212,7 @@ def train_step2(train_data_file:str, test_data_file:str, device:int,
     
 if __name__ == "__main__":
     device = int(sys.argv[1])
-    data_dir = '/mnt/dgx_projects/sakundu/Apple/asap7/data/step2/'
+    data_dir = ''
     train_data_file = f"{data_dir}/train/train_label.txt"
     test_data_file = f"{data_dir}/test/test_label.txt"
     train_step2(train_data_file, test_data_file, device)

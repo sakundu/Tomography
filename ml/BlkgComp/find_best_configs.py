@@ -1,5 +1,5 @@
-# Authors: Sayak Kundu, Dooseok Yoon
-# Copyright (c) 2023, The Regents of the University of California
+# Authors: xxx 
+# Copyright (c) 2023, The Regents of the xxx 
 # All rights reserved.
 
 import torch
@@ -132,7 +132,7 @@ def train_step2(data_dir:str, db_scan_file:str, run_id:int, device:int,
     
 if __name__ == "__main__":
     device = int(sys.argv[1])
-    data_dir = "/mnt/dgx_projects/sakundu/Apple/nova_ng45/"
+    data_dir = ""
     db_scan_file = f"{data_dir}/dbscan_non_overlapping_drc_region.rpt"
     run_id = 1
     train_step2(data_dir, db_scan_file, run_id, device)
