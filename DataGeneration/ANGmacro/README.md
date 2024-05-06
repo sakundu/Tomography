@@ -3,7 +3,7 @@
 Here, ANG-Macro means 'macro-integrated artificial netlist'
 
 1. Setup ANG environment
-  - Refer to the ANG GitHub repositor \[[GitHub](https://github.com/daeyeon22/artificial_netlist_generator)\]
+  - Refer to the ANG GitHub repository \[[GitHub](https://github.com/daeyeon22/artificial_netlist_generator)\]
 
 2. Select macro type and count. In this example, we select 4 types of macros, total 5 instances
   - u_mem_0: fakeram45_128x32  

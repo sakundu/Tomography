@@ -1,7 +1,3 @@
-# Authors: Sayak Kundu, Dooseok Yoon
-# Copyright (c) 2023, The Regents of the University of California
-# All rights reserved.
-
 import __future__
 import numpy as np
 from typing import List, Optional, Tuple, Dict, Any
@@ -155,18 +151,18 @@ def write_job_file(configuration, run_file, job_file, k1:List[int],
 
 def generate_job_details() -> None:
     size = [100, 150, 200]
-    sub_sizes = [10, 20, 30]
-    sub_sizes1 = [15, 25]
+    sub_sizes_train = [10, 20, 30]
+    sub_sizes_test = [15, 25]
     counts = [1, 2, 3, 4]
     loc_comb = 4
-    train_configuration = generate_configurations(size, sub_sizes, counts,
+    train_configuration = generate_configurations(size, sub_sizes_train, counts,
                                                   loc_comb, 42)
-    test_configuration = generate_configurations(size, sub_sizes1, counts,
+    test_configuration = generate_configurations(size, sub_sizes_test, counts,
                                                  loc_comb, 42)
 
-    run_file = "/home/fetzfs_projects/Tomography/sakundu/kth_sweep_ml_data/run_data_generation.sh"
-    train_job_file = "./code/train_job_file"
-    test_job_file = "./code/test_job_file"
+    run_file = "./run_data_generation.sh"
+    train_job_file = "./train_job_file"
+    test_job_file = "./test_job_file"
     k1 = [0, 1, 2, 3, 4, 5]
     k2 = [3, 5, 8, 10, 13, 15, 18, 20]
 

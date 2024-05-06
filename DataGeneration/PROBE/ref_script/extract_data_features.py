@@ -1,7 +1,3 @@
-# Authors: Sayak Kundu, Dooseok Yoon
-# Copyright (c) 2023, The Regents of the University of California
-# All rights reserved.
-
 '''
 This code reads the following files:
     1. Congestion area report: Contains GCELL grid location and resource details
