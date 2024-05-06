@@ -1,5 +1,6 @@
 # Tomography
 This repository contains codes for the Tomography project, designed to utilize placement tomography features for DRC hotspot prediction and to generate routing blockages for hotspot mitigation.
+And it also contains data generation scripts required for training and testing.
 
 ## PROBE
 For details, click [here](./DataGeneration/PROBE/README.md).
