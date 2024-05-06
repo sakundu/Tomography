@@ -12,7 +12,8 @@ This repository contains codes for the Tomography project, designed to utilize p
   - **k2**: cell swap counts for each subregion
 
 
-## ANG-Macro
+## ANG-Macro 
+For details, click [here](./DataGeneration/ANGmacro/README.md).
 
 | <img src="ANGmacro.png" width=600px> |
 |:--:|
