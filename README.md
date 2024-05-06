@@ -15,3 +15,10 @@ For details, click [here](./DataGeneration/ANGmacro/README.md).
 | <img src="ANGmacro.png" width=600px> |
 |:--:|
 | *Description of Macro Integration* |
+## ML Model, Training and Testing
+For details, clis [here](./ml/README.md).
+
+
+## Flow scripts
+For details, click [here](./backend/README.md).
+
