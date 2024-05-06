@@ -8,7 +8,7 @@
   - **loc_comb**: number of subregion location combinations
   - **k1**: cell swap counts for the whole region
   - **k2**: cell swap counts for each subregion
-<img src="PROBE.png" width=600px>
+<img src="PROBE_Parameters.png" width=600px>
 
 2. Run *generate_data_configuration.py* for job_file generation
   - Command: ***python generate_data_configuration.py***
