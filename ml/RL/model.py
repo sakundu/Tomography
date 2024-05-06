@@ -80,4 +80,5 @@ class MobifiedMobileNetV2(nn.Module):
     
     def forward(self, x):
         x = self.model(x)
+        x = F.softmax(x, dim = 1)
         return x

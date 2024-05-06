@@ -117,9 +117,8 @@ def find_rank_order(data_dir:str, dbscan_file:str, config_list:List[List[int]],
     model = model.to(device)
     
     # Load the best model
-    model_dir = '/mnt/dgx_projects/sakundu/Apple/Step2_resnet50/best_model'
-    best_model = f'{model_dir}/step2_model_0_20231125_071242.pt'
-    # best_model = '/mnt/dgx_projects/sakundu/Apple/Step2_resnet50_calibration/best_model/step2_model_0_20240126_010529.pt'
+    model_dir = ''
+    best_model = f'{model_dir}/'
     model.load_state_dict(torch.load(f"{best_model}"))
     sorted_ids = get_top_n_best_config(model, dataset, device, batch_size)
     return sorted_ids
@@ -143,8 +142,7 @@ def train_step2(data_dir:str, db_scan_file:str, run_id:int, device:int,
     model = model.to(device)
     
     # Load the best model
-    # best_model = '/mnt/dgx_projects/sakundu/Apple/Step2_resnet50_calibration/best_model/step2_model_0_20240125_195953.pt'
-    best_model = '/mnt/dgx_projects/sakundu/Apple/Step2_resnet50_calibration/best_model/step2_model_0_20240126_010529.pt'
+    best_model = ''
     model.load_state_dict(torch.load(f"{best_model}"))
     best_config_hotspot_wise = []
     for i in range(test_dataset.get_hotspot_count()):
@@ -162,7 +160,7 @@ def train_step2(data_dir:str, db_scan_file:str, run_id:int, device:int,
     
 if __name__ == "__main__":
     device = int(sys.argv[1])
-    data_dir = "/mnt/dgx_projects/sakundu/Apple/nova_ng45/"
+    data_dir = ""
     db_scan_file = f"{data_dir}/dbscan_non_overlapping_drc_region.rpt"
     run_id = 1
     train_step2(data_dir, db_scan_file, run_id, device)
