@@ -164,3 +164,16 @@ proc get_drc_rpt { file_name } {
   }
   close $fp
 }
+
+proc report_net_length { file_name } {
+  set fp [open $file_name "w"]
+  
+  set heading_line "Net Name,Net Length"
+  puts $fp $heading_line
+  foreach net_ptr [dbget top.nets.isPwrOrGnd 0 -p] {
+    set net_name [dbget $net_ptr.name]
+    set net_length [expr [join [dbget ${net_ptr}.wires.length ] + ]]
+    puts $fp "$net_name,$net_length"
+  }
+  close $fp
+}

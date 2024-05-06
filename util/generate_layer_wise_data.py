@@ -4,9 +4,9 @@ import sys
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-from typing import Tuple
+from typing import Tuple, List
 from multiprocessing import Pool, current_process
-from generate_drc_blockage_box import run_db_scan, return_all_non_overlapping_box
+from generate_drc_blockage_box_v1 import run_db_scan, return_all_non_overlapping_box
 
 
 def get_box_id(x, y, xoffset, xpitch, yoffset, ypitch) -> Tuple[int, int]:
@@ -82,6 +82,16 @@ def add_gcell_id(df_feature):
     
     return df_feature
 
+def get_box(i:int, j:int, box, x_pitch, y_pitch):
+    if i <= 0:
+        i = 1
+    if j <= 0:
+        j = 1
+    llx1 = round(box[0] + (j-1)*x_pitch, 6)
+    lly1 = round(box[1] + (i-1)*y_pitch, 6)
+    urx1 = round(box[0] + j*x_pitch, 6)
+    ury1 = round(box[1] + i*y_pitch, 6)
+    return llx1, lly1, urx1, ury1
 
 def get_details(df):
     gcell_width = (df['urx'] - df['llx']).values[0]
@@ -226,8 +236,43 @@ def generate_data(run_dir, output_dir):
     
     return
 
+def generate_layer_wise_dbscan(run_dir):
+    feature_rpt = f"{run_dir}/layer_wise_feature.rpt"
+    drc_box_rpt = f"{run_dir}/layer_wise_drc_box.rpt"
+    
+    data_df = pd.read_csv(feature_rpt)
+    data_df = add_gcell_id(data_df)
+    data_df = add_drc_details(drc_box_rpt, data_df)
+    gcell_width, gcell_height, x_count, xoffset, yoffset, y_count = get_details(data_df)
+    box = [xoffset, yoffset, xoffset + x_count*gcell_width, yoffset + y_count*gcell_height]
+    
+    layer_map = {
+        "metal2" : ["metal1", "metal3", "V"],
+        "metal3" : ["metal2", "metal4", "H"],
+        "metal4" : ["metal3", "metal5", "V"],
+        "metal5" : ["metal4", "metal6", "H"],
+        "metal6" : ["metal5", "metal7", "V"],
+    }
+    
+    output_file = f"{run_dir}/layer_wise_dbscan.rpt"
+    fp = open(output_file, 'w')
+    for k, v in layer_map.items():
+        drc_marker = get_nparray(data_df, f"{k}_drc")
+        drc_regions = run_db_scan(drc_marker, 0, 4)
+        drc_region_boxes = return_all_non_overlapping_box(drc_regions)
+        
+        for bx in drc_region_boxes:
+            # print(bx, gcell_height, gcell_width, box)
+            llx, lly, _, _ = get_box(bx[2], bx[0], box, gcell_width, gcell_height)
+            _, _, urx, ury = get_box(bx[3], bx[1], box, gcell_width, gcell_height)
+            fp.write(f"{llx} {lly} {urx} {ury} {k}\n")
+    
+    fp.close()
+    return
+    
+
 def process_run(run_dir):
-    output_dir="/home/fetzfs_projects/Tomography/sakundu/kth_sweep_ml_data/layer_wise_extract/data/ca53"
+    output_dir=""
     generate_data(run_dir, output_dir)
     return
 
@@ -244,7 +289,5 @@ def run_parallel(run_dir_file):
     return
 
 if __name__ == '__main__':
-    process_run("/home/fetzfs_projects/Tomography/sakundu/evaluation_runs/run_9")
-    # run_parallel(sys.argv[1])
-    print("Done!!")
-    # sys.exit(0)
+    # process_run("")
+    generate_layer_wise_dbscan('')

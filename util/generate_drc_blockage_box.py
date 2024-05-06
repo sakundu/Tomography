@@ -36,9 +36,17 @@ def sort_boxes(drc_boxes):
                           reverse=True)
     return sorted_boxes
 
+def update_box(box):
+    llx, urx, lly, ury = box
+    if llx > urx:
+        llx, urx = urx, llx
+    if lly > ury:
+        lly, ury = ury, lly
+    return llx, urx, lly, ury
+
 def is_box_overlap(box1, box2):
-    llx1, urx1, lly1, ury1 = box1
-    llx2, urx2, lly2, ury2 = box2
+    llx1, urx1, lly1, ury1 = update_box(box1)
+    llx2, urx2, lly2, ury2 = update_box(box2)
     if llx1 > urx2 or llx2 > urx1:
         return False
     if lly1 > ury2 or lly2 > ury1:
@@ -312,9 +320,14 @@ def break_cluster_further(ax, indices, pcluster:str, shape, eps, min_samples,
         if sub_cluster == -1:
             continue
         mask = clusters == sub_cluster
-        if np.count_nonzero(mask) < threshold:
-            continue
+        # if np.count_nonzero(mask) < threshold:
+        #     continue
+        
         cluster_indices = indices[mask]
+        cluster_bounding_box_area = find_bounding_box_area(cluster_indices)
+        if cluster_bounding_box_area < threshold:
+            continue
+        
         normalized_gcell_count = len(cluster_indices) / (shape[0]*shape[1])
         
         if normalized_gcell_count > 0.05:
@@ -358,7 +371,7 @@ def break_cluster_further(ax, indices, pcluster:str, shape, eps, min_samples,
     return drc_regions
 
 def run_db_scan(route_drc_count, threshold:int = 0, eps:int = 3,
-                min_samples:int = 6, is_plot:bool = False):
+                min_samples:int = 6, min_size:int = 16, is_plot:bool = False):
     matrix, indices, shape = init_process(route_drc_count, threshold)
 
     if len(indices) == 0:
@@ -385,12 +398,15 @@ def run_db_scan(route_drc_count, threshold:int = 0, eps:int = 3,
         if cluster == -1:
             continue
         mask = clusters == cluster
-        if np.count_nonzero(mask) < 16:
-            continue
+        # if np.count_nonzero(mask) < 16:
+        #     continue
 
         color = colors[cluster]
-
         cluster_indices = indices[mask]
+        cluster_bounding_box_area = find_bounding_box_area(cluster_indices)
+        if cluster_bounding_box_area < min_size:
+            continue
+        
         normalized_gcell_count = len(cluster_indices) / (shape[0]*shape[1])
         if normalized_gcell_count > 0.05:
             # print(f"Cluster {cluster}: Normalized Gcell count {normalized_gcell_count}")
@@ -466,7 +482,7 @@ def get_read_box_coord(box, design):
 def generate_details(is_train:bool = False, no:int = 1000,
                      threshold:int = 0, db_unit:int = 2000):
     
-    base_dir = "/home/fetzfs_projects/Tomography/sakundu/kth_sweep_ml_data"
+    base_dir = ""
     run_type = 'test'
     if is_train:
         run_type = 'train'
@@ -521,7 +537,7 @@ def generate_details_run(run_dir, threshold:int = 0, db_unit:int = 2000):
 
 def write_drc_boxes(is_train:bool = False, no:int = 1000,
                      threshold:int = 0, db_unit:int = 2000):
-    base_dir = "/home/fetzfs_projects/Tomography/sakundu/kth_sweep_ml_data"
+    base_dir = ""
     run_type = 'test'
     if is_train:
         run_type = 'train'
@@ -591,7 +607,7 @@ if __name__ == '__main__':
     run_dir = sys.argv[1]
     write_drc_boxes_run(run_dir)
     exit()
-    base_dir = '/home/fetzfs_projects/Tomography/sakundu/kth_sweep_ml_data'
+    base_dir = ''
     run_types = ['test_asap7', 'train_asap7']
     
     run_dir_list = []
