@@ -10,6 +10,7 @@ module load innovus/21.1
 # To run the Physical Synthesis (iSpatial) flow - flow2
 export PHY_SYNTH=0
 export CLK_PERIOD=$1
+export UTIL=$2
 #export PROJ_DIR=`pwd | grep -o "/\S*/BlobPlacement"`
 #export PROJ_DIR="${PROJ_DIR}/flows"
 

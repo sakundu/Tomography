@@ -10,6 +10,7 @@ set netlist ${handoff_dir}/${DESIGN}.v
 set sdc ./${DESIGN}.sdc 
 source mmmc_setup.tcl
 
+set util $::env(UTIL)
 setMultiCpuUsage -localCpu 16
 
 set rptDir summaryReport/ 
@@ -63,7 +64,7 @@ if {[info exist ::env(PHY_SYNTH)] && $::env(PHY_SYNTH) == 1} {
   ## Check if the floorplan def exists or not
   #if {![file exists $floorplan_def]} {
     puts "Floorplan def does not exist. Initializing floorplan with utilization 0.5 and aspect ratio 1.0"
-    floorPlan -r 1 0.85 2 2 2 2
+    floorPlan -r 1 $util 2 2 2 2
     puts "Placing the pins on the left boundary of the floorplan"
   #} else {
   #  defIn $floorplan_de../f
