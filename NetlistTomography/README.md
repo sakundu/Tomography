@@ -1,8 +1,8 @@
 # Netlist Tomography
-This repository contains scripts for the Netliste Tomography project.
+This repository contains scripts for the Netlist Tomography project.
 
 ## P&R scripts
-Innovus scripts for NOVA design with NG45 technology is uploaded.
+Innovus scripts for NOVA design with NG45 technology are uploaded.
 ```
 cd NetlistTomography/pnr
 ## run target clock period 1.3ns and target utilization 85%
