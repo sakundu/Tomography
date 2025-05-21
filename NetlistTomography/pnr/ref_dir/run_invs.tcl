@@ -107,55 +107,10 @@ setFillerMode -fitGap true
 setDesignMode -topRoutingLayer $TOP_ROUTING_LAYER
 setDesignMode -bottomRoutingLayer 2 
 
-## Fix here: We need to run place design only and then opt design ##
-## Get the nets and instances with dontTouch false ##
-set nets_ptr [dbget top.nets.dontTouch false -p -e ]
-set ints_ptr [dbget top.insts.dontTouch false -p -e ]
-
-foreach net_ptr $nets_ptr {
-  dbset ${net_ptr}.dontTouch true
-}
-
-foreach int_ptr $ints_ptr {
-  dbset ${int_ptr}.dontTouch true
-}
-
-## Check if seeded def exists or not ##
-if { [info exists ::env(SEEDED_DEF)] && [file exists $::env(SEEDED_DEF)]} {
-  defIn $::env(SEEDED_DEF)
-  place_design -incremental
-} else {
-  place_design
-}
-
-## Write out the required info for blob placement ##
-#source ${proj_dir}/../Scripts/gen_graph_invs.tcl
-#mkdir -p blob_inputs
-#cd blob_inputs
-#write_blob_place_exp_info
-#cd ..
-saveDesign $encDir/${DESIGN}_only_placed.enc
-
-## Update net dontTouch status ##
-foreach net_ptr $nets_ptr {
-  dbset ${net_ptr}.dontTouch false
-}
-
-foreach int_ptr $ints_ptr {
-  dbset ${int_ptr}.dontTouch false
-}
-
-## Remove the Regions ##
-if { [dbget top.fplan.groups -e] != "" } {
-  deleteAllInstGroups
-}
-
-set rpt_pre_cts [extract_report preCTS]
-echo "$rpt_pre_cts" >> ${DESIGN}_DETAILS.rpt
-
-# place_opt_design -out_dir $rptDir -prefix place
-optDesign -preCTS
+place_opt_design -out_dir $rptDir -prefix place
 saveDesign $encDir/${DESIGN}_placed.enc
+
+## Add soft guides here
 
 set rpt_pre_cts [extract_report preCTS]
 echo "$rpt_pre_cts" >> ${DESIGN}_DETAILS.rpt
@@ -198,7 +153,6 @@ setNanoRouteMode -routeExpAdvancedTechnology true
 setNanoRouteMode -grouteExpWithTimingDriven false
 
 routeDesign
-#route_opt_design
 saveDesign ${encDir}/${DESIGN}_route.enc
 
 ### Run DRC and LVS ###
@@ -209,9 +163,7 @@ set rpt_post_route [extract_report postRoute]
 echo "$rpt_post_route" >> ${DESIGN}_DETAILS.rpt
 defOut -netlist -floorplan -routing ${DESIGN}_route.def
 
-#route_opt_design
-#optDesign -postRoute
-ecoRoute -fix_drc
+optDesign -postRoute
 set rpt_post_route [extract_report postRouteOpt]
 echo "$rpt_post_route" >> ${DESIGN}_DETAILS.rpt
 
